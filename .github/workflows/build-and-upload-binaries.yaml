@@ -58,7 +58,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main static_build_helper
+          git fetch origin gui_built_final static_build_helper
 
       - name: cherry-pick for version <= 1.5.2
         if: steps.get_version.outputs.category == 'before_or_equal_1_5_2'
