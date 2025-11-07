@@ -68,7 +68,6 @@ jobs:
           git cherry-pick 36c5e266dbf2bba0df39a7f789615fa4a2ecb8c3
           git cherry-pick ce2f799f7d21d266c08331173480c3fc19f0e89a
           git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0
-          git cherry-pick 87a2ebff6db4282356ec7b2299ff4f45a9e7695d
           git cherry-pick bbdc1557d0dc6a5c695bda788a32bb08ee8fd497
 
       - name: cherry-pick for version > 1.5.2
