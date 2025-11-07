@@ -238,7 +238,6 @@ jobs:
 
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
-          python3 -m pip install -r lanelet2
           python3 -m pip install pyinstaller
           
           # Verify imports work before building
@@ -246,7 +245,7 @@ jobs:
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
-          SPEC_FILE=map_validator_gui2.spec
+          SPEC_FILE=map_validator_gui.spec
 
           pyinstaller "$SPEC_FILE"
 
