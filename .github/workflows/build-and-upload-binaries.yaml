@@ -281,6 +281,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install gh -y
 
+      - name: Create or verify GitHub Release
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          # Just check if release exists, don't try to create
+          if ! gh release view "$VERSION" > /dev/null 2>&1; then
+            echo "Release $VERSION does not exist, please create it first"
+            exit 1
+          fi
+          echo "Release $VERSION exists, proceeding with upload"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload artifacts to GitHub Release
         run: |
           if [ -n "${{ steps.gpg-sign.outputs.signature_name }}" ]; then
