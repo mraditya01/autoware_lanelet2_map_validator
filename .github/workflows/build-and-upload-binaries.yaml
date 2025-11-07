@@ -262,6 +262,11 @@ jobs:
       - name: Sign the package with GPG
         id: gpg-sign
         run: |
+          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
+            echo "GPG_PRIVATE_KEY secret not set, skipping signing"
+            echo "signature_name=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
           gpg --batch --yes --detach-sign --armor --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" -o ${{ steps.package.outputs.zip_name }}.asc ${{ steps.package.outputs.zip_name }}
           echo "signature_name=${{ steps.package.outputs.zip_name }}.asc" >> $GITHUB_OUTPUT
@@ -278,9 +283,15 @@ jobs:
 
       - name: Upload artifacts to GitHub Release
         run: |
-          gh release upload "${{ steps.get_version.outputs.version }}" \
-            "${{ steps.package.outputs.zip_name }}" \
-            "${{ steps.gpg-sign.outputs.signature_name }}" \
-            --clobber
+          if [ -n "${{ steps.gpg-sign.outputs.signature_name }}" ]; then
+            gh release upload "${{ steps.get_version.outputs.version }}" \
+              "${{ steps.package.outputs.zip_name }}" \
+              "${{ steps.gpg-sign.outputs.signature_name }}" \
+              --clobber
+          else
+            gh release upload "${{ steps.get_version.outputs.version }}" \
+              "${{ steps.package.outputs.zip_name }}" \
+              --clobber
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
