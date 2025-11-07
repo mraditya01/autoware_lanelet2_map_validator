@@ -223,7 +223,6 @@ jobs:
           set -e
           tree -L 3 -d
           source /opt/ros/humble/setup.bash
-          export LANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install"
 
           cd autoware_lanelet2_map_validator/gui
 
