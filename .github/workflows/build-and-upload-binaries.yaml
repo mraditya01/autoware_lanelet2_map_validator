@@ -284,12 +284,13 @@ jobs:
       - name: Create or verify GitHub Release
         run: |
           VERSION="${{ steps.get_version.outputs.version }}"
-          # Just check if release exists, don't try to create
+          # Check if release exists, if not create it
           if ! gh release view "$VERSION" > /dev/null 2>&1; then
-            echo "Release $VERSION does not exist, please create it first"
-            exit 1
+            echo "Release $VERSION does not exist, creating it..."
+            gh release create "$VERSION" --draft=false --generate-notes || true
+          else
+            echo "Release $VERSION already exists"
           fi
-          echo "Release $VERSION exists, proceeding with upload"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
