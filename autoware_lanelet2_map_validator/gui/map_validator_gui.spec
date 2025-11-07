@@ -27,13 +27,13 @@ if lanelet2_path:
         binaries.append((sofile, os.path.join('lanelet2', os.path.dirname(rel_path))))
     # Add Python files
     for pyfile in glob.glob(os.path.join(lanelet2_path, '**/*.py'), recursive=True):
-        rel_path = os.path.relpath(pyfile, os.path.dirname(lanelet2_path))
-        datas.append((pyfile, os.path.dirname(rel_path)))
+        rel_path = os.path.relpath(pyfile, lanelet2_path)
+        datas.append((pyfile, os.path.join('lanelet2', os.path.dirname(rel_path))))
 
 # Find and add autoware_lanelet2_extension_python files
 ext_python_path = None
 for path in sys.path:
-    potential_path = os.path.join(path, 'autoware_lanelet2_extension_python')
+    potential_path = os.path.join(path, 'autoware_lanelet2_extension_python_ws')
     if os.path.exists(potential_path):
         ext_python_path = potential_path
         break
@@ -42,12 +42,12 @@ if ext_python_path:
     # Add .so files
     for sofile in glob.glob(os.path.join(ext_python_path, '**/*.so'), recursive=True):
         rel_path = os.path.relpath(sofile, ext_python_path)
-        binaries.append((sofile, os.path.join('autoware_lanelet2_extension_python', os.path.dirname(rel_path))))
+        binaries.append((sofile, os.path.join('autoware_lanelet2_extension_python_ws', os.path.dirname(rel_path))))
 
     # Add Python files
     for pyfile in glob.glob(os.path.join(ext_python_path, '**/*.py'), recursive=True):
-        rel_path = os.path.relpath(pyfile, os.path.dirname(ext_python_path))
-        datas.append((pyfile, os.path.dirname(rel_path)))
+        rel_path = os.path.relpath(pyfile, ext_python_path)
+        datas.append((pyfile, os.path.join('autoware_lanelet2_extension_python_ws', os.path.dirname(rel_path))))
 
 # Also add from autoware source if available via environment variable
 autoware_ext_path = os.environ.get('AUTOWARE_LANELET2_EXTENSION_PATH')
@@ -57,15 +57,15 @@ if autoware_ext_path and os.path.exists(autoware_ext_path):
         binaries.append((sofile, os.path.join('autoware_lanelet2_extension', os.path.dirname(rel_path))))
     # Add Python files from source
     for pyfile in glob.glob(os.path.join(autoware_ext_path, '**/*.py'), recursive=True):
-        rel_path = os.path.relpath(pyfile, os.path.dirname(autoware_ext_path))
-        datas.append((pyfile, os.path.dirname(rel_path)))
+        rel_path = os.path.relpath(pyfile, autoware_ext_path)
+        datas.append((pyfile, os.path.join('autoware_lanelet2_extension', os.path.dirname(rel_path))))
 
 a = Analysis(
     ['gui.py'],
     pathex=[''],
     binaries=binaries,
     datas=datas,
-    hiddenimports=['lanelet2', 'autoware_lanelet2_extension_python'],
+    hiddenimports=['lanelet2', 'lanelet2.io', 'autoware_lanelet2_extension_python', 'autoware_lanelet2_extension_python.projection'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
