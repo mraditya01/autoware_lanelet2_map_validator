@@ -224,15 +224,12 @@ jobs:
           tree -L 3 -d
           source /opt/ros/humble/setup.bash
                     
-          export LANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install"
-          export AUTOWARE_LANELET2_EXTENSION_PATH="$GITHUB_WORKSPACE/autoware_lanelet2_extension/"
           export AUTOWARE_LANELET2_EXTENSION_PYTHON_PATH="$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/autoware_lanelet2_extension_python"
           
           source $GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/setup.bash || true
           source $GITHUB_WORKSPACE/autoware_ws/install/setup.bash || true
           
-          export PYTHONPATH="$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib/python3.10/site-packages:$GITHUB_WORKSPACE/lanelet2/install/lib/python3.10/site-packages:${PYTHONPATH}"
-          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
+          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
 
           cd autoware_lanelet2_map_validator/gui
 
