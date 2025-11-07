@@ -238,6 +238,7 @@ jobs:
 
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
+          python3 -m pip install lanelet2
           python3 -m pip install pyinstaller
           
           # Verify imports work before building
