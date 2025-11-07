@@ -68,7 +68,7 @@ jobs:
           git cherry-pick 36c5e266dbf2bba0df39a7f789615fa4a2ecb8c3
           git cherry-pick ce2f799f7d21d266c08331173480c3fc19f0e89a
           git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0
-          git cherry-pick bbdc1557d0dc6a5c695bda788a32bb08ee8fd497
+          git cherry-pick f03e5c60a6e9ca01b77841024daded878a99715e
 
       - name: cherry-pick for version > 1.5.2
         if: steps.get_version.outputs.category == 'after_1_5_2'
@@ -245,7 +245,7 @@ jobs:
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
-          SPEC_FILE=map_validator_gui.spec
+          SPEC_FILE=map_validator_gui2.spec
 
           pyinstaller "$SPEC_FILE"
 
