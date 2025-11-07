@@ -69,6 +69,7 @@ jobs:
           git cherry-pick ce2f799f7d21d266c08331173480c3fc19f0e89a || true
           git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0 || true
           git cherry-pick f03e5c60a6e9ca01b77841024daded878a99715e || true
+          git cherry-pick a906482ec6b528b84904445ca2e4917745d2053c || true
 
       - name: cherry-pick for version > 1.5.2
         if: steps.get_version.outputs.category == 'after_1_5_2'
