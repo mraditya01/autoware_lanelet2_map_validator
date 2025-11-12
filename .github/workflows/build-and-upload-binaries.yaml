@@ -62,18 +62,6 @@ jobs:
         run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
 
-      - name: Install System Dependencies
-        run: |
-          set -e
-          apt-get update
-          apt-get install -y \
-            python3-pip \
-            python3-dev \
-            tree \
-            zip \
-            unzip
-          rm -rf /var/lib/apt/lists/*
-
       - name: Build validator GUI
         id: build_gui
         shell: bash
@@ -81,42 +69,26 @@ jobs:
           set -e
           tree -L 3 -d
           
-          # Initialize the container environment like interactive bash does
-          source /etc/bash.bashrc 
-          
-          # Set up ROS environment properly
+          source /etc/bash.bashrc
           source /opt/ros/humble/setup.bash
-          
-          # Check what packages are actually available in the container
-          echo "Available autoware packages:"
-          find /opt/ros/humble -name "*autoware*" | head -20
-          
-          # Let's try to find the autoware workspace that should be in the container
+                    
           if [ -d "/autoware" ]; then
             echo "Found /autoware directory, sourcing it..."
             cd /autoware
             source install/setup.bash || true
           fi
           
-          # Also check if there's an autoware setup in /opt
           for setup_file in $(find /opt -name "setup.bash" | grep -i autoware 2>/dev/null); do
             echo "Sourcing autoware setup: $setup_file"
             source "$setup_file" || true
           done
-          
-          echo "Final PYTHONPATH: $PYTHONPATH"
           
           cd $GITHUB_WORKSPACE/autoware_lanelet2_map_validator/gui
 
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
           python3 -m pip install pyinstaller
-          
-          # Verify imports work before building
-          echo "Testing imports..."
-          python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
-          python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
-          
+                    
           SPEC_FILE=map_validator_gui.spec
 
           pyinstaller "$SPEC_FILE"
