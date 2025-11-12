@@ -83,7 +83,6 @@ jobs:
           
           # Initialize the container environment like interactive bash does
           source /etc/bash.bashrc 
-          source ~/.bashrc
           
           # Set up ROS environment properly
           source /opt/ros/humble/setup.bash
