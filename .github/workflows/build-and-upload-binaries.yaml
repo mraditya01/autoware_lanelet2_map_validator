@@ -87,8 +87,22 @@ jobs:
           find /opt/ros/humble -name "*autoware*" -type d | head -10
           find /opt/ros/humble -name "*lanelet2*" -type d | head -10
           
-          # Set Python path to include the built extension
-          export PYTHONPATH="/usr/local/lib/python3.10/site-packages:$PYTHONPATH"
+          # Try to source additional setup files that might be missing
+          echo "Sourcing additional setup files..."
+          source /opt/ros/humble/local_setup.bash || true
+          for setup_file in $(find /opt/ros/humble -name "setup.bash" 2>/dev/null); do
+            echo "Sourcing: $setup_file"
+            source "$setup_file" || true
+          done
+          
+          # Check current PYTHONPATH
+          echo "Current PYTHONPATH: $PYTHONPATH"
+          echo "Current ROS environment:"
+          env | grep ROS | head -10
+          
+          # Try to find where autoware_lanelet2_extension_python might be
+          find /opt/ros/humble -name "*.py" | grep -i autoware | grep -i lanelet2 | head -5
+          find /opt/ros/humble -name "*autoware_lanelet2_extension*" | head -10
           
           cd $GITHUB_WORKSPACE/autoware_lanelet2_map_validator/gui
 
@@ -101,7 +115,7 @@ jobs:
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
-          SPEC_FILE=map_validator_gui.spec
+          SPEC_FILE=map_validator_gui3.spec
 
           pyinstaller "$SPEC_FILE"
 
