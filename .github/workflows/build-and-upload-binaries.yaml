@@ -81,6 +81,32 @@ jobs:
           set -e
           tree -L 3 -d
           
+          # Initialize the container environment like interactive bash does
+          source /etc/bash.bashrc || true
+          source ~/.bashrc || true
+          
+          # Set up ROS environment properly
+          source /opt/ros/humble/setup.bash
+          
+          # Check what packages are actually available in the container
+          echo "Available autoware packages:"
+          find /opt/ros/humble -name "*autoware*" | head -20
+          
+          # Let's try to find the autoware workspace that should be in the container
+          if [ -d "/autoware" ]; then
+            echo "Found /autoware directory, sourcing it..."
+            cd /autoware
+            source install/setup.bash || true
+          fi
+          
+          # Also check if there's an autoware setup in /opt
+          for setup_file in $(find /opt -name "setup.bash" | grep -i autoware 2>/dev/null); do
+            echo "Sourcing autoware setup: $setup_file"
+            source "$setup_file" || true
+          done
+          
+          echo "Final PYTHONPATH: $PYTHONPATH"
+          
           cd $GITHUB_WORKSPACE/autoware_lanelet2_map_validator/gui
 
           python3 -m pip install --upgrade pip
