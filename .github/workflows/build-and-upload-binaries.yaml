@@ -97,7 +97,7 @@ jobs:
             ros-humble-tf2 ros-humble-tf2-geometry-msgs ros-humble-visualization-msgs
           sudo rm -rf /var/lib/apt/lists/*
 
-      - name: Build Lanelet2 (dynamic/shared, loop style)
+      - name: Build Lanelet2 (static, loop style)
         run: |
           set -e
           source /opt/ros/humble/setup.bash
@@ -107,7 +107,7 @@ jobs:
           mkdir -p build install
           cd build
           for pkg in lanelet2_core lanelet2_io lanelet2_projection lanelet2_traffic_rules lanelet2_routing lanelet2_validation lanelet2_matching lanelet2_python; do
-            echo "==== Building $pkg (shared) ===="
+            echo "==== Building $pkg ===="
             mkdir -p $pkg
             cd $pkg
             if [ -d ../../install/share/lanelet2_core ]; then
@@ -122,9 +122,40 @@ jobs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_STANDARD=17 \
               -DCMAKE_CXX_FLAGS="-fPIC" \
-              -DBUILD_SHARED_LIBS=ON \
+              -DBUILD_SHARED_LIBS=OFF \
               -DBUILD_TESTING=OFF \
               -DCMAKE_INSTALL_PREFIX=../../install
+            make -j$(nproc)
+            make install
+            cd ..
+          done
+
+      - name: Build Lanelet2 (shared/dynamic, for Python)
+        run: |
+          set -e
+          source /opt/ros/humble/setup.bash
+          cd lanelet2
+          mkdir -p build_shared install_shared
+          cd build_shared
+          for pkg in lanelet2_core lanelet2_io lanelet2_projection lanelet2_traffic_rules lanelet2_routing lanelet2_validation lanelet2_matching lanelet2_python; do
+            echo "==== Building $pkg (shared) ===="
+            mkdir -p $pkg
+            cd $pkg
+            if [ -d ../../install_shared/share/lanelet2_core ]; then
+              export CMAKE_PREFIX_PATH="$(realpath ../../install_shared):/opt/ros/humble:${CMAKE_PREFIX_PATH}"
+              export AMENT_PREFIX_PATH="$(realpath ../../install_shared):${AMENT_PREFIX_PATH}"
+            else
+              export CMAKE_PREFIX_PATH="/opt/ros/humble"
+            fi
+            cmake ../../$pkg \
+              -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}" \
+              -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_STANDARD=17 \
+              -DCMAKE_CXX_FLAGS="-fPIC" \
+              -DBUILD_SHARED_LIBS=ON \
+              -DBUILD_TESTING=OFF \
+              -DCMAKE_INSTALL_PREFIX=../../install_shared
             make -j$(nproc)
             make install
             cd ..
@@ -170,7 +201,7 @@ jobs:
           export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install:$GITHUB_WORKSPACE/autoware_ws/install:$GITHUB_WORKSPACE/fmt/temp_install:/opt/ros/humble"
           cmake .. \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=ON \
+            -DBUILD_SHARED_LIBS=OFF \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DLANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install"
           make -j$(nproc)
@@ -184,7 +215,7 @@ jobs:
              autoware_lanelet2_extension_python/CMakeLists.txt
 
           cd ..
-          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install:$GITHUB_WORKSPACE/autoware_ws/install:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install:/opt/ros/humble"
+          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared:$GITHUB_WORKSPACE/autoware_ws/install:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install:/opt/ros/humble"
           export AMENT_PREFIX_PATH="$GITHUB_WORKSPACE/autoware_ws/install:/opt/ros/humble"
 
           colcon build --symlink-install \
@@ -192,7 +223,7 @@ jobs:
             --cmake-args \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-DBOOST_BIND_GLOBAL_PLACEHOLDERS -Wno-deprecated-declarations -Wno-error=deprecated-declarations" \
-              -DLANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install" \
+              -DLANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install_shared" \
               -DAUTOWARE_LANELET2_EXTENSION_INSTALL_DIR="$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install"
           cd ..
 
@@ -226,9 +257,9 @@ jobs:
           source /opt/ros/humble/setup.bash
           
           # Use locally built lanelet2 from shared install (for Python)
-          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install:$GITHUB_WORKSPACE/autoware_ws/install:${CMAKE_PREFIX_PATH}"
-          export PYTHONPATH="$GITHUB_WORKSPACE/lanelet2/install/lib/python3.10/site-packages:${PYTHONPATH}"
-          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
+          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared:$GITHUB_WORKSPACE/autoware_ws/install:${CMAKE_PREFIX_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib/python3.10/site-packages:${PYTHONPATH}"
+          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
           
           source $GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/setup.bash || true
           source $GITHUB_WORKSPACE/autoware_ws/install/setup.bash || true
