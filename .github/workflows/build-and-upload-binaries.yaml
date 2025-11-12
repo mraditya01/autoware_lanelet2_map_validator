@@ -120,13 +120,6 @@ jobs:
           zip -r $ZIP_NAME release_package
           echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
 
-      - name: Sign the package with GPG
-        id: gpg-sign
-        run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          gpg --batch --yes --detach-sign --armor --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" -o ${{ steps.package.outputs.zip_name }}.asc ${{ steps.package.outputs.zip_name }}
-          echo "signature_name=${{ steps.package.outputs.zip_name }}.asc" >> $GITHUB_OUTPUT
-
       - name: Install GitHub CLI
         run: |
           apt-get update
@@ -142,7 +135,6 @@ jobs:
         run: |
           gh release upload "${{ steps.get_version.outputs.version }}" \
             "${{ steps.package.outputs.zip_name }}" \
-            "${{ steps.gpg-sign.outputs.signature_name }}" \
             --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
