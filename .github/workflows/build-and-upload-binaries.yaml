@@ -62,6 +62,7 @@ jobs:
           rm -rf /var/lib/apt/lists/*
 
       - name: Setup Python Environment
+        shell: bash
         run: |
           set -e
           source /opt/ros/humble/setup.bash
@@ -72,6 +73,7 @@ jobs:
 
       - name: Build GUI Binary
         id: build_gui
+        shell: bash
         run: |
           set -e
           source /opt/ros/humble/setup.bash
