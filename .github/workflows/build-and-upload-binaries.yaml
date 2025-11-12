@@ -136,17 +136,24 @@ jobs:
           fi
           cd ../..
 
-      - name: Package artifacts
+      - name: Package GUI artifacts
         id: package
         run: |
           VERSION=${{ steps.get_version.outputs.version }}
-          ZIP_NAME="autoware_lanelet2_map_validator-${VERSION}-linux-x86_64.zip"
+          ZIP_NAME="autoware_lanelet2_map_validator_gui-${VERSION}-linux-x86_64.zip"
           mkdir release_package
-          cp "${{ steps.build_validator.outputs.artifact }}" release_package/
+          
+          # Copy GUI binary
           cp "${{ steps.build_gui.outputs.gui_artifact }}" release_package/
+          
+          # Copy configuration files needed by GUI
           cp -r autoware_lanelet2_map_validator/config release_package/
           cp -r autoware_lanelet2_map_validator/map_requirements release_package/
-          strip release_package/autoware_lanelet2_map_validator || true
+          
+          # Strip GUI binary to reduce size
+          strip release_package/$(basename "${{ steps.build_gui.outputs.gui_artifact }}") || true
+          
+          # Create ZIP package
           zip -r $ZIP_NAME release_package
           echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
 
