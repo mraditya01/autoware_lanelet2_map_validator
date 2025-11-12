@@ -82,7 +82,29 @@ jobs:
           tree -L 3 -d
           source /opt/ros/humble/setup.bash
 
-          cd autoware_lanelet2_map_validator/gui
+          # Check what autoware packages are available
+          echo "Checking available autoware packages..."
+          find /opt/ros/humble -name "*autoware*" -type d | head -10
+          find /opt/ros/humble -name "*lanelet2*" -type d | head -10
+          
+          # Try to find Python bindings
+          find /opt/ros/humble -name "*.so" | grep -i lanelet2 | head -5
+          
+          # Build autoware_lanelet2_extension Python bindings
+          echo "Building autoware_lanelet2_extension Python bindings..."
+          cd /tmp
+          git clone https://github.com/autowarefoundation/autoware_lanelet2_extension.git
+          cd autoware_lanelet2_extension
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+          make install
+          
+          # Set Python path to include the built extension
+          export PYTHONPATH="/usr/local/lib/python3.10/site-packages:$PYTHONPATH"
+          
+          cd $GITHUB_WORKSPACE/autoware_lanelet2_map_validator/gui
 
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
@@ -90,7 +112,6 @@ jobs:
           
           # Verify imports work before building
           echo "Testing imports..."
-          python3 -c "import sys; print('Python path:'); [print(p) for p in sys.path]"
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
