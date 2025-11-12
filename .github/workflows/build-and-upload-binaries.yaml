@@ -67,7 +67,6 @@ jobs:
         shell: bash
         run: |
           set -e
-          tree -L 3 -d
           
           source /etc/bash.bashrc
           source /opt/ros/humble/setup.bash
