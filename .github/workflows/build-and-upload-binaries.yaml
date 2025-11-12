@@ -97,6 +97,7 @@ jobs:
 
       - name: Build validator GUI
         id: build_gui
+        shell: bash
         run: |
           set -e
           tree -L 3 -d
