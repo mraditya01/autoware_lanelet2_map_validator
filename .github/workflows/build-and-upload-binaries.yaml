@@ -97,38 +97,38 @@ jobs:
             ros-humble-tf2 ros-humble-tf2-geometry-msgs ros-humble-visualization-msgs
           sudo rm -rf /var/lib/apt/lists/*
 
-      # - name: Build Lanelet2 (static, loop style)
-      #   run: |
-      #     set -e
-      #     source /opt/ros/humble/setup.bash
-      #     git clone https://github.com/fzi-forschungszentrum-informatik/lanelet2.git
-      #     cd lanelet2
-      #     git checkout 1.2.2
-      #     mkdir -p build install
-      #     cd build
-      #     for pkg in lanelet2_core lanelet2_io lanelet2_projection lanelet2_traffic_rules lanelet2_routing lanelet2_validation lanelet2_matching lanelet2_python; do
-      #       echo "==== Building $pkg ===="
-      #       mkdir -p $pkg
-      #       cd $pkg
-      #       if [ -d ../../install/share/lanelet2_core ]; then
-      #         export CMAKE_PREFIX_PATH="$(realpath ../../install):/opt/ros/humble:${CMAKE_PREFIX_PATH}"
-      #         export AMENT_PREFIX_PATH="$(realpath ../../install):${AMENT_PREFIX_PATH}"
-      #       else
-      #         export CMAKE_PREFIX_PATH="/opt/ros/humble"
-      #       fi
-      #       cmake ../../$pkg \
-      #         -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}" \
-      #         -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-      #         -DCMAKE_BUILD_TYPE=Release \
-      #         -DCMAKE_CXX_STANDARD=17 \
-      #         -DCMAKE_CXX_FLAGS="-fPIC" \
-      #         -DBUILD_SHARED_LIBS=OFF \
-      #         -DBUILD_TESTING=OFF \
-      #         -DCMAKE_INSTALL_PREFIX=../../install
-      #       make -j$(nproc)
-      #       make install
-      #       cd ..
-      #     done
+      - name: Build Lanelet2 (static, loop style)
+        run: |
+          set -e
+          source /opt/ros/humble/setup.bash
+          git clone https://github.com/fzi-forschungszentrum-informatik/lanelet2.git
+          cd lanelet2
+          git checkout 1.2.2
+          mkdir -p build install
+          cd build
+          for pkg in lanelet2_core lanelet2_io lanelet2_projection lanelet2_traffic_rules lanelet2_routing lanelet2_validation lanelet2_matching lanelet2_python; do
+            echo "==== Building $pkg ===="
+            mkdir -p $pkg
+            cd $pkg
+            if [ -d ../../install/share/lanelet2_core ]; then
+              export CMAKE_PREFIX_PATH="$(realpath ../../install):/opt/ros/humble:${CMAKE_PREFIX_PATH}"
+              export AMENT_PREFIX_PATH="$(realpath ../../install):${AMENT_PREFIX_PATH}"
+            else
+              export CMAKE_PREFIX_PATH="/opt/ros/humble"
+            fi
+            cmake ../../$pkg \
+              -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}" \
+              -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_STANDARD=17 \
+              -DCMAKE_CXX_FLAGS="-fPIC" \
+              -DBUILD_SHARED_LIBS=OFF \
+              -DBUILD_TESTING=OFF \
+              -DCMAKE_INSTALL_PREFIX=../../install
+            make -j$(nproc)
+            make install
+            cd ..
+          done
 
       - name: Build Lanelet2 (shared/dynamic, for Python)
         run: |
