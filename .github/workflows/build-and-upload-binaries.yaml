@@ -26,6 +26,31 @@ jobs:
           VERSION=${REF_NAME#v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+          # Split into major, minor, patch
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          # Default values to 0 if missing
+          MAJOR=${MAJOR:-0}
+          MINOR=${MINOR:-0}
+          PATCH=${PATCH:-0}
+
+          # Reference version 1.5.2
+          REF_MAJOR=1
+          REF_MINOR=5
+          REF_PATCH=2
+
+          # Compare version parts
+          if (( MAJOR < REF_MAJOR )) || \
+             (( MAJOR == REF_MAJOR && MINOR < REF_MINOR )) || \
+             (( MAJOR == REF_MAJOR && MINOR == REF_MINOR && PATCH <= REF_PATCH )); then
+            CATEGORY="before_or_equal_1_5_2"
+          else
+            CATEGORY="after_1_5_2"
+          fi
+
+          echo "Category: $CATEGORY"
+          echo "category=$CATEGORY" >> "$GITHUB_OUTPUT"
+
       - name: Check out repository
         uses: actions/checkout@v4
         with:
@@ -36,6 +61,25 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/autoware_lanelet2_map_validator/autoware_lanelet2_map_validator
           git config --global --add safe.directory $GITHUB_WORKSPACE
+
+      - name: Cherry-pick preparation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main static_build_helper
+
+      - name: cherry-pick for version <= 1.5.2
+        if: steps.get_version.outputs.category == 'before_or_equal_1_5_2'
+        run: |
+          git cherry-pick b92492bb2232f0c1d502cfc0c6aede2f3169116b
+          git cherry-pick 8ed41f2f8d59d63c09bb47ac8ad59d4f56c7d07c
+          git cherry-pick 36c5e266dbf2bba0df39a7f789615fa4a2ecb8c3
+          git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0
+
+      - name: cherry-pick for version > 1.5.2
+        if: steps.get_version.outputs.category == 'after_1_5_2'
+        run: |
+          git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0
 
       - name: Install GUI Dependencies
         run: |
