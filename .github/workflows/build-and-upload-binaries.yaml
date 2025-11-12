@@ -89,7 +89,7 @@ jobs:
           export PYTHONPATH="/opt/ros/humble/lib/python3.10/site-packages:$PYTHONPATH"
           
           # Build the GUI binary using PyInstaller
-          pyinstaller map_validator_gui.spec --clean --noconfirm
+          pyinstaller map_validator_gui3.spec --clean --noconfirm
           
           # Check if binary was created
           GUI_BIN="dist/map_validator_gui"
