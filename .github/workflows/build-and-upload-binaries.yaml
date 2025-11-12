@@ -56,32 +56,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ steps.get_version.outputs.version }}
+          ref: static_build_helper
 
-      - name: Cherry-pick preparation
+      - name: Configure Git Safe Directory
         run: |
-          cd $GITHUB_WORKSPACE
           git config --global --add safe.directory $GITHUB_WORKSPACE
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main static_build_helper
-
-      - name: cherry-pick for version <= 1.5.2
-        if: steps.get_version.outputs.category == 'before_or_equal_1_5_2'
-        run: |
-          cd $GITHUB_WORKSPACE
-          git cherry-pick b92492bb2232f0c1d502cfc0c6aede2f3169116b || true
-          git cherry-pick 8ed41f2f8d59d63c09bb47ac8ad59d4f56c7d07c || true
-          git cherry-pick 36c5e266dbf2bba0df39a7f789615fa4a2ecb8c3 || true
-          git cherry-pick ce2f799f7d21d266c08331173480c3fc19f0e89a || true
-          git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0 || true
-          git cherry-pick 33822df8a58dc9b47a3221bbaf26e1b69254beae
-
-      - name: cherry-pick for version > 1.5.2
-        if: steps.get_version.outputs.category == 'after_1_5_2'
-        run: |
-          cd $GITHUB_WORKSPACE
-          git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0 || true
 
       - name: Install System Dependencies
         run: |
