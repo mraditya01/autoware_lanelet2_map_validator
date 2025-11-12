@@ -15,7 +15,7 @@ jobs:
   build-gui:
     runs-on: ubuntu-22.04
     container:
-      image: ghcr.io/autowarefoundation/autoware:humble-latest
+      image: ghcr.io/autowarefoundation/autoware:core-devel
       options: --user root
 
     steps:
