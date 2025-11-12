@@ -184,14 +184,14 @@ jobs:
              autoware_lanelet2_extension_python/CMakeLists.txt
 
           cd ..
-          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared:$GITHUB_WORKSPACE/autoware_ws/install:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install:/opt/ros/humble"
+          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install:$GITHUB_WORKSPACE/autoware_ws/install:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install:/opt/ros/humble"
           export AMENT_PREFIX_PATH="$GITHUB_WORKSPACE/autoware_ws/install:/opt/ros/humble"
 
           colcon build --symlink-install \
             --packages-up-to autoware_lanelet2_extension_python \
             --cmake-args \
               -DCMAKE_BUILD_TYPE=Release \
-              -DLANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install_shared" \
+              -DLANELET2_INSTALL_DIR="$GITHUB_WORKSPACE/lanelet2/install" \
               -DAUTOWARE_LANELET2_EXTENSION_INSTALL_DIR="$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install"
           cd ..
 
@@ -225,9 +225,9 @@ jobs:
           source /opt/ros/humble/setup.bash
           
           # Use locally built lanelet2 from shared install (for Python)
-          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared:$GITHUB_WORKSPACE/autoware_ws/install:${CMAKE_PREFIX_PATH}"
-          export PYTHONPATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib/python3.10/site-packages:${PYTHONPATH}"
-          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
+          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install:$GITHUB_WORKSPACE/autoware_ws/install:${CMAKE_PREFIX_PATH}"
+          export PYTHONPATH="$GITHUB_WORKSPACE/lanelet2/install/lib/python3.10/site-packages:${PYTHONPATH}"
+          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
           
           source $GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/setup.bash || true
           source $GITHUB_WORKSPACE/autoware_ws/install/setup.bash || true
