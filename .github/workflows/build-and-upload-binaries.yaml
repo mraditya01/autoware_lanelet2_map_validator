@@ -82,8 +82,8 @@ jobs:
           tree -L 3 -d
           
           # Initialize the container environment like interactive bash does
-          source /etc/bash.bashrc || true
-          source ~/.bashrc || true
+          source /etc/bash.bashrc 
+          source ~/.bashrc
           
           # Set up ROS environment properly
           source /opt/ros/humble/setup.bash
