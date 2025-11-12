@@ -117,7 +117,7 @@ jobs:
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
-          SPEC_FILE=map_validator_gui3.spec
+          SPEC_FILE=map_validator_gui.spec
 
           pyinstaller "$SPEC_FILE"
 
