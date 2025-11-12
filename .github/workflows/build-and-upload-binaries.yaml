@@ -83,15 +83,13 @@ jobs:
           cd $GITHUB_WORKSPACE
           git cherry-pick c15da63bd1b11d0de0ed4ab0f9693ebaf0fdddc0 || true
 
-      - name: Install GUI Dependencies
+      - name: Install System Dependencies
         run: |
           set -e
           apt-get update
           apt-get install -y \
             python3-pip \
-            python3-venv \
             python3-dev \
-            pyinstaller \
             tree \
             zip \
             unzip
