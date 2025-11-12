@@ -81,14 +81,6 @@ jobs:
           set -e
           tree -L 3 -d
           source /opt/ros/humble/setup.bash
-          
-          # Use locally built lanelet2 from shared install (for Python)
-          export CMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared:$GITHUB_WORKSPACE/autoware_ws/install:${CMAKE_PREFIX_PATH}"
-          export PYTHONPATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib/python3.10/site-packages:${PYTHONPATH}"
-          export LD_LIBRARY_PATH="$GITHUB_WORKSPACE/lanelet2/install_shared/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension/autoware_lanelet2_extension/install/lib:$GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/lib:${LD_LIBRARY_PATH}"
-          
-          source $GITHUB_WORKSPACE/autoware_lanelet2_extension_python_ws/install/setup.bash || true
-          source $GITHUB_WORKSPACE/autoware_ws/install/setup.bash || true
 
           cd autoware_lanelet2_map_validator/gui
 
@@ -98,6 +90,7 @@ jobs:
           
           # Verify imports work before building
           echo "Testing imports..."
+          python3 -c "import sys; print('Python path:'); [print(p) for p in sys.path]"
           python3 -c "import lanelet2; print(f'lanelet2: {lanelet2.__file__}')" || echo "Warning: lanelet2 import failed"
           python3 -c "import autoware_lanelet2_extension_python; print(f'autoware_lanelet2_extension_python: {autoware_lanelet2_extension_python.__file__}')" || echo "Warning: autoware_lanelet2_extension_python import failed"
           
