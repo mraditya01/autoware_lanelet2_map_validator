@@ -32,6 +32,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ steps.get_version.outputs.version }}
 
+      - name: Configure Git Safe Directory
+        run: |
+          git config --global --add safe.directory /__w/autoware_lanelet2_map_validator/autoware_lanelet2_map_validator
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
       - name: Install GUI Dependencies
         run: |
           set -e
