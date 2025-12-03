@@ -23,6 +23,7 @@
 #include <lanelet2_traffic_rules/TrafficRulesFactory.h>
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <set>
 #include <string>
@@ -52,14 +53,27 @@ lanelet::validation::Issues RoundaboutConfigurationValidator::check_roundabout_c
 
   std::vector<lanelet::RegulatoryElementConstPtr> roundabout_reg_elems;
 
+  std::cout << "[DEBUG] Total regulatory elements in map: " << map.regulatoryElementLayer.size() << std::endl;
+
   for (const auto & reg_elem : map.regulatoryElementLayer) {
     const auto & attrs = reg_elem->attributes();
     const auto & subtype_it = attrs.find(lanelet::AttributeName::Subtype);
 
+    std::cout << "[DEBUG] Regulatory element ID: " << reg_elem->id();
+    if (subtype_it != attrs.end()) {
+      std::cout << ", Subtype: " << subtype_it->second;
+    } else {
+      std::cout << ", Subtype: NOT FOUND";
+    }
+    std::cout << std::endl;
+
     if (subtype_it != attrs.end() && subtype_it->second == "roundabout") {
+      std::cout << "[DEBUG] >>> Found roundabout regulatory element! ID: " << reg_elem->id() << std::endl;
       roundabout_reg_elems.push_back(reg_elem);
     }
   }
+
+  std::cout << "[DEBUG] Total roundabout elements found: " << roundabout_reg_elems.size() << std::endl;
 
   auto traffic_rules = lanelet::traffic_rules::TrafficRulesFactory::create(
     lanelet::Locations::Germany, lanelet::Participants::Vehicle);
